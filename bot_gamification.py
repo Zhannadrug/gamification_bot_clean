@@ -19,10 +19,12 @@ from oauth2client.service_account import ServiceAccountCredentials
 import aiocron
 from datetime import datetime, timedelta
 import pytz
+import os
 
-# === Настройки ===
-API_TOKEN = '7927451877:AAE3zEyNcNTXTjTqwUCa3nc_xomAPKVewDc'
-
+API_TOKEN = os.getenv('API_TOKEN')
+    if API_TOKEN is None:
+    raise ValueError("Не найден API_TOKEN! Проверьте переменные окружения.")
+    
 bot = Bot(token=API_TOKEN, parse_mode=types.ParseMode.HTML)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
@@ -35,7 +37,7 @@ daily_points = {}
 
 # === Настройка Google Sheets ===
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("/content/credentials.json", scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
 client = gspread.authorize(creds)
 sheet = client.open("GamificationData").worksheet("Баллы")
 
